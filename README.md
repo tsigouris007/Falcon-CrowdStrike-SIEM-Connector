@@ -17,3 +17,22 @@ The `API_BASE_URL` depends on the region you are:
 Make sure to check out the documentation just in case any of these values changes.
 
 The `CLIENT_ID` and `CLIENT_SECRET` can be produced by visiting `/api-clients-and-keys` UI.
+
+## Building
+
+```bash
+~$ docker build . -t <name>:<tag>
+```
+
+## Running
+
+```bash
+~$ docker run <name>:<tag>
+```
+
+## Debugging
+
+Make sure you have a running container first.
+```bash
+~$ docker exec -it <container_name> bash
+```
