@@ -1,0 +1,25 @@
+[Unit]
+Description=CS Falcon SIEM Connector
+After=network.target
+ConditionPathExists=/opt/crowdstrike/bin/cs.falconhoseclient
+
+[Service]
+User=daemon
+UMask=022
+LimitNOFILE=10000
+TimeoutStopSec=90
+WorkingDirectory=/opt/crowdstrike/bin
+Environment="LOGGER_NAME=FALCON-SIEM-CONNECTOR"
+
+Restart=on-failure
+RestartSec=5
+StartLimitInterval=60
+StartLimitBurst=5
+StartLimitAction=none
+
+StandardOutput=null
+StandardError=null
+ExecStart=/opt/crowdstrike/bin/cs.falconhoseclient -nodaemon -config=/opt/crowdstrike/etc/cs.falconhoseclient.cfg 2>&1 | logger -t FALCON-SIEM-CONNECTOR[WARN] -i
+
+[Install]
+WantedBy=multi-user.target
