@@ -8,7 +8,7 @@ USER root
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # Apt stuff
-RUN apt-get update && apt-get install gettext-base
+RUN apt-get update && apt-get install -y gettext-base curl
 
 # Prepare a simple user instead of root
 RUN groupadd -r user && useradd -r -g user user
@@ -35,6 +35,11 @@ RUN export $(grep -v '^#' .env | xargs) && envsubst < ./${FALCON_CFG}.template >
 
 # Move the final configuration to the proper location
 RUN mv ./${FALCON_CFG} /opt/crowdstrike/etc
+
+# Install required certificates
+# This step is not always required but we had problems
+RUN curl -s -o /etc/ssl/certs/DigiCertHighAssuranceEVRootCA.crt https://www.digicert.com/CACerts/DigiCertHighAssuranceEVRootCA.crt
+RUN curl -s -o /etc/ssl/certs/DigiCertAssuredIDRootCA.crt https://dl.cacerts.digicert.com/DigiCertAssuredIDRootCA.crt
 
 # Change to user
 USER user
