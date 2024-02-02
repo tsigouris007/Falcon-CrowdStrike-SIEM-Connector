@@ -7,7 +7,9 @@ USER root
 # Hack
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-# Apt stuff
+# Not entirely necessary yet it doesn't harm
+RUN apt-get clean autoclean && apt-get autoremove --yes
+# Apt update + package installations
 RUN apt-get update && apt-get install -y gettext-base curl
 
 # Prepare a simple user instead of root
