@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  falconhoseclient:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: falconhoseclient
+    environment:
+      - FALCON_CFG=cs.falconhoseclient.cfg
+    user: user
+    working_dir: /home/user
