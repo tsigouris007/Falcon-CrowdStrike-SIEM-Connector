@@ -36,3 +36,18 @@ Make sure you have a running container first.
 ```bash
 ~$ docker exec -it <container_name> bash
 ```
+
+## docker-compose
+
+If you have `docker-compose` on your machine you can simply run:
+
+```bash
+~$ docker-compose up -d # To spin things up
+~$ docker-compose ps    # To show process
+~$ docker-compose logs  # To show logs
+~$ docker-compose down  # To spin down
+```
+
+## Notes
+
+This image is built for Linux x64 so you might need to do some adjustments for other architectures.
