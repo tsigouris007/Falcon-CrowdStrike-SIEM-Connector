@@ -54,4 +54,4 @@ USER user
 
 ENV PATH="${WORKDIR}:${PATH}"
 
-ENTRYPOINT [ "entrypoint.sh" ]
+ENTRYPOINT [ "/bin/bash", "-c", "exec ${WORKDIR}/entrypoint.sh" ]
