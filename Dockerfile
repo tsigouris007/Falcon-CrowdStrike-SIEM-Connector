@@ -1,6 +1,8 @@
 FROM --platform=linux/amd64 ubuntu:20.04
 
-ARG FALCON_CFG="cs.falconhoseclient.cfg"
+ARG CLIENT_ID=""
+ARG CLIENT_SECRET=""
+ARG API_BASE_URL=""
 
 USER root
 
@@ -24,24 +26,26 @@ WORKDIR /home/user
 COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb ./crowdstrike.deb
 RUN dpkg -i ./crowdstrike.deb
 
+# Change user access to the configuration files (could be better)
+RUN chown -R user:user /opt/crowdstrike/etc/
+
 # Entrypoint
 COPY entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
 
 # CrowdStrike configuration file
-COPY cfg/${FALCON_CFG}.template .
+COPY cfg/cs.falconhoseclient.cfg.template .
 
-# Environment setup
+# Environment setup (if defined the values are used in the entrypoint)
 COPY .env .
-RUN export $(grep -v '^#' .env | xargs) && envsubst < ./${FALCON_CFG}.template > ./${FALCON_CFG}
-
-# Move the final configuration to the proper location
-RUN mv ./${FALCON_CFG} /opt/crowdstrike/etc
 
 # Install required certificates
-# This step is not always required but we had problems
+# This step is not always required but it certainly avoids some problems
 RUN curl -s -o /etc/ssl/certs/DigiCertHighAssuranceEVRootCA.crt https://www.digicert.com/CACerts/DigiCertHighAssuranceEVRootCA.crt
 RUN curl -s -o /etc/ssl/certs/DigiCertAssuredIDRootCA.crt https://dl.cacerts.digicert.com/DigiCertAssuredIDRootCA.crt
+
+# Change owner of workdir
+RUN chown -R user:user /home/user
 
 # Change to user
 USER user
