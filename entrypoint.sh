@@ -1,5 +1,6 @@
 #!/bin/bash
 
+WORKDIR="/home/user"
 CONFIG="cs.falconhoseclient.cfg"
 
 # Read the .env file properties
@@ -29,6 +30,6 @@ fi
 echo "API Base URL: $API_BASE_URL"
 
 # Substitute things properly
-export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "./${CONFIG}.template" > "./${CONFIG}"
+export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${WORKDIR}/${CONFIG}"
 
-/opt/crowdstrike/bin/cs.falconhoseclient -nodaemon -config="./${CONFIG}" 2>&1
+/opt/crowdstrike/bin/cs.falconhoseclient -nodaemon -config="${WORKDIR}/${CONFIG}" 2>&1
