@@ -28,6 +28,10 @@ WORKDIR "${WORKDIR}"
 COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
 RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
+# Copy the binary executable to /usr/local/bin
+RUN ln -s /opt/crowdstrike/bin/cs.falconhoseclient /usr/local/bin/cs.falconhoseclient
+RUN ln -s "${WORKDIR}/entrypoint.sh" /usr/local/bin/falconhoseclient
+
 # Change user access to the configuration files (could be better)
 RUN chown -R user:user /opt/crowdstrike/etc/
 
@@ -52,6 +56,4 @@ RUN chown -R user:user "${WORKDIR}"
 # Change to user
 USER user
 
-ENV PATH="${WORKDIR}:${PATH}"
-
-ENTRYPOINT [ "/bin/bash", "-c", "exec ${WORKDIR}/entrypoint.sh" ]
+ENTRYPOINT [ "falconhoseclient" ]

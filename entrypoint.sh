@@ -32,4 +32,4 @@ echo "API Base URL: $API_BASE_URL"
 # Substitute things properly
 export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${WORKDIR}/${CONFIG}"
 
-/opt/crowdstrike/bin/cs.falconhoseclient -nodaemon -config="${WORKDIR}/${CONFIG}" 2>&1
+cs.falconhoseclient -nodaemon -config="${WORKDIR}/${CONFIG}" 2>&1
