@@ -24,19 +24,19 @@ RUN chmod -R 755 /var/log/crowdstrike/falconhoseclient
 
 WORKDIR "${WORKDIR}"
 
-# CrowdStrike deb package
-COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
-RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
-
-# Link the binary executable to /usr/bin
-RUN ln -s /opt/crowdstrike/bin/cs.falconhoseclient /usr/bin/cs.falconhoseclient
-RUN ln -s "${WORKDIR}/entrypoint.sh" /usr/bin/falconhoseclient
-
-# Entrypoint
+# Copy entrypoint
 COPY entrypoint.sh "${WORKDIR}"
 RUN chmod +x "${WORKDIR}/entrypoint.sh"
 
-# CrowdStrike configuration file
+# Copy CrowdStrike deb package
+COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
+RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
+
+# Link the binary executables to /usr/bin
+RUN ln -s /opt/crowdstrike/bin/cs.falconhoseclient /usr/bin/cs.falconhoseclient
+RUN ln -s "${WORKDIR}/entrypoint.sh" /usr/bin/falconhoseclient
+
+# Copy CrowdStrike configuration file
 COPY cfg/cs.falconhoseclient.cfg.template "${WORKDIR}"
 
 # Environment setup (if defined the values are used in the entrypoint)
