@@ -2,25 +2,33 @@
 
 CONFIG="cs.falconhoseclient.cfg"
 
-# Some conditional echoes for sanity
-if [ -n "$API_BASE_URL" ]; then 
-  echo "[*] Using arguments."
-  echo "[+] API Base URL: ${API_BASE_URL}"
-else
-  echo "[*] Using .env file."
-  URL="$(grep API_BASE_URL .env | cut -d'=' -f2)"
-  echo "[+] API Base URL: ${URL}"
+# Read the .env file properties
+F_CLIENT_ID="$(grep CLIENT_ID .env | awk -F'=' '{print $2}')"
+F_CLIENT_SECRET="$(grep CLIENT_SECRET .env | awk -F'=' '{print $2}')"
+F_API_BASE_URL="$(grep API_BASE_URL .env | awk -F'=' '{print $2}')"
+
+# Set the necessary variables
+if [ -n "$F_CLIENT_ID" ] && [ -z "$CLIENT_ID" ]; then
+  CLIENT_ID="$(echo $F_CLIENT_ID)"
 fi
 
-# Output to the .env file
-if [ -n "$CLIENT_ID" ]; then sed -i "s|CLIENT_ID=.*|CLIENT_ID=$CLIENT_ID|" .env; fi
-if [ -n "$CLIENT_SECRET" ]; then sed -i "s|CLIENT_SECRET=.*|CLIENT_SECRET=$CLIENT_SECRET|" .env; fi
-if [ -n "$API_BASE_URL" ]; then sed -i "s|API_BASE_URL=.*|API_BASE_URL=$API_BASE_URL|" .env; fi
+if [ -n "$F_CLIENT_SECRET" ] && [ -z "$CLIENT_SECRET" ]; then
+  CLIENT_SECRET="$(echo $F_CLIENT_SECRET)"
+fi
+
+if [ -n "$F_API_BASE_URL" ] && [ -z "$API_BASE_URL" ]; then
+  API_BASE_URL="$(echo $F_API_BASE_URL)"
+fi
+
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$API_BASE_URL" ]; then
+  echo "[-] Please define CLIENT_ID, CLIENT_SECRET, API_BASE_URL."
+  exit 1
+fi
+
+# Sanity echo
+echo "API Base URL: $API_BASE_URL"
 
 # Substitute things properly
-export $(grep -v '^#' .env | xargs) && envsubst < "./${CONFIG}.template" > "./${CONFIG}"
+export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "./${CONFIG}.template" > "./${CONFIG}"
 
-# Copy the final config file to the proper location
-mv "./${CONFIG}" /opt/crowdstrike/etc
-
-/opt/crowdstrike/bin/cs.falconhoseclient -nodaemon -config=/opt/crowdstrike/etc/cs.falconhoseclient.cfg 2>&1
+/opt/crowdstrike/bin/cs.falconhoseclient -nodaemon -config="./${CONFIG}" 2>&1
