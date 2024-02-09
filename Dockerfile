@@ -16,21 +16,21 @@ RUN apt-get clean autoclean && apt-get autoremove --yes
 # Apt update + package installations
 RUN apt-get update && apt-get install -y gettext-base curl
 
+# Copy CrowdStrike deb package
+COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
+RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
+
 # Prepare a simple user instead of root
 RUN groupadd -r user && useradd -r -g user user
-RUN mkdir -p /var/log/crowdstrike/falconhoseclient
 RUN chown -R user:user /var/log/crowdstrike/falconhoseclient
 RUN chmod -R 755 /var/log/crowdstrike/falconhoseclient
+RUN chown -R user:user /opt/crowdstrike/etc
 
 WORKDIR "${WORKDIR}"
 
 # Copy entrypoint
 COPY entrypoint.sh "${WORKDIR}"
 RUN chmod +x "${WORKDIR}/entrypoint.sh"
-
-# Copy CrowdStrike deb package
-COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
-RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
 # Link the binary executables to /usr/bin
 RUN ln -s /opt/crowdstrike/bin/cs.falconhoseclient /usr/bin/cs.falconhoseclient
@@ -52,5 +52,7 @@ RUN chown -R user:user "${WORKDIR}"
 
 # Change to user
 USER user
+
+ENV PATH="${WORKDIR}:${PATH}"
 
 ENTRYPOINT [ "falconhoseclient" ]
