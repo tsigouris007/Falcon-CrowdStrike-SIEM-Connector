@@ -3,6 +3,7 @@
 WORKDIR="/home/user"
 CONFIGDIR="/opt/crowdstrike/etc"
 CONFIG="cs.falconhoseclient.cfg"
+LOGDIR="/var/log/crowdstrike/falconhoseclient"
 
 # Read the .env file properties
 F_CLIENT_ID="$(grep CLIENT_ID .env | awk -F'=' '{print $2}')"
@@ -27,10 +28,11 @@ if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$API_BASE_URL" ]; the
   exit 1
 fi
 
-# Sanity echo
-echo "API Base URL: $API_BASE_URL"
-
 # Substitute things properly
 export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${CONFIGDIR}/${CONFIG}"
 
-cs.falconhoseclient -nodaemon -config="${CONFIGDIR}/${CONFIG}" 2>&1
+# Run this in the background and output the enrollment into a file
+cs.falconhoseclient -nodaemon -config="${CONFIGDIR}/${CONFIG}" >> ${LOGDIR}/enroll 2>&1 &
+
+# Poll the output to stdout
+tail -f ${LOGDIR}/output > /dev/stdout

@@ -47,7 +47,7 @@ max_size = 500
 # Number of backups of the output file to be stored
 max_backups = 10
 # Maximum age of backup output files before it is deleted in DAYS
-max_age = 30
+max_age = 7
 
 [Logging]
 verbose_log = true
@@ -56,7 +56,7 @@ max_size = 500
 # Number of backups to be stored
 max_backups = 10
 # Maximum age of backup files before it is deleted in DAYS
-max_age = 30
+max_age = 7
 
 [Syslog]
 send_to_syslog_server = false
