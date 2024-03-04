@@ -20,9 +20,6 @@ RUN apt-get update && apt-get install -y gettext-base curl
 COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
 RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
-# Create output file
-RUN touch /var/log/crowdstrike/falconhoseclient/output
-
 # Prepare a simple user instead of root
 RUN groupadd -g 1000 user && useradd -r -u 1000 -g user user
 RUN chown -R user:user /var/log/crowdstrike/falconhoseclient

@@ -32,7 +32,4 @@ fi
 export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${CONFIGDIR}/${CONFIG}"
 
 # Run this in the background and output the enrollment into a file
-cs.falconhoseclient -config="${CONFIGDIR}/${CONFIG}" 2>&1
-
-# Poll the output to stdout
-tail -f ${LOGDIR}/output > /dev/stdout
+cs.falconhoseclient -nodaemon -config="${CONFIGDIR}/${CONFIG}" 2>&1
