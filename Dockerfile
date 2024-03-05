@@ -22,7 +22,6 @@ RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
 # Prepare a simple user instead of root
 RUN groupadd -g 1000 user && useradd -r -u 1000 -g user user
-RUN ln -s /proc/self/fd/1 /var/log/crowdstrike/falconhoseclient/output
 RUN chown -R user:user /var/log/crowdstrike/falconhoseclient
 RUN chmod -R 755 /var/log/crowdstrike/falconhoseclient
 RUN chown -R user:user /opt/crowdstrike/etc
