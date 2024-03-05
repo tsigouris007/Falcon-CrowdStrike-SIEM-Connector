@@ -35,7 +35,7 @@ output_to_file = true
 output_path = /var/log/containers/falcon_output.log
 
 # Offset file full filepath and filename
-offset_path = /var/log/crowdstrike/falconhoseclient/stream_offsets
+offset_path = /var/log/containers/falcon_offsets.log
 
 [Output_File_Rotation]
 # If the output is writing to a file, then the settings below will govern output file rotation
