@@ -32,7 +32,7 @@ output_format = json
 # Will be true regardless if Syslog is not enabled
 # If path does not exist or user has no permission, log file will be used
 output_to_file = true
-output_path = /dev/fd/1
+output_path = /dev/stdout
 
 # Offset file full filepath and filename
 offset_path = /var/log/crowdstrike/falconhoseclient/stream_offsets
