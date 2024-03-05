@@ -32,10 +32,10 @@ output_format = json
 # Will be true regardless if Syslog is not enabled
 # If path does not exist or user has no permission, log file will be used
 output_to_file = true
-output_path = /var/log/containers/falcon_output.log
+output_path = /var/log/crowdstrike/falconhoseclient/output
 
 # Offset file full filepath and filename
-offset_path = /var/log/containers/falcon_offsets.log
+offset_path = /var/log/crowdstrike/falconhoseclient/stream_offsets
 
 [Output_File_Rotation]
 # If the output is writing to a file, then the settings below will govern output file rotation
