@@ -20,11 +20,14 @@ RUN apt-get update && apt-get install -y gettext-base curl
 COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
 RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
+RUN mkdir -p /var/log/pods/falconhoseclient
+
 # Prepare a simple user instead of root
 RUN groupadd -g 1000 user && useradd -r -u 1000 -g user user
 RUN chown -R user:user /var/log/crowdstrike/falconhoseclient
 RUN chmod -R 755 /var/log/crowdstrike/falconhoseclient
 RUN chown -R user:user /opt/crowdstrike/etc
+RUN chown -R user:user /var/log/pods/falconhoseclient
 
 WORKDIR "${WORKDIR}"
 
