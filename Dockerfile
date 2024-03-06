@@ -28,6 +28,7 @@ RUN chown -R user:user /var/log/crowdstrike/falconhoseclient
 RUN chmod -R 755 /var/log/crowdstrike/falconhoseclient
 RUN chown -R user:user /opt/crowdstrike/etc
 RUN chown -R user:user /var/log/pods/falconhoseclient
+RUN chmod -R 755 /var/log/pods/falconhoseclient
 
 WORKDIR "${WORKDIR}"
 
