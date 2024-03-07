@@ -27,8 +27,13 @@ if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$API_BASE_URL" ]; the
   exit 1
 fi
 
+if [ -z "$LOG_DIR" ] && [ -z "$LOG_FILE" ]; then
+  LOG_DIR=""
+  LOG_FILE="/dev/stdout"
+fi
+
 # Substitute things properly
-export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${CONFIGDIR}/${CONFIG}"
+export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL LOG_DIR=$LOG_DIR LOG_FILE=$LOG_FILE") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${CONFIGDIR}/${CONFIG}"
 
 # Run the client
 cs.falconhoseclient -nodaemon -config="${CONFIGDIR}/${CONFIG}" 2>&1

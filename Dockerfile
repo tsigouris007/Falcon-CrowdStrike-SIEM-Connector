@@ -5,6 +5,17 @@ ENV WORKDIR="/home/user"
 ARG CLIENT_ID=""
 ARG CLIENT_SECRET=""
 ARG API_BASE_URL=""
+# The LOG_DIR has to be the directory until the LOG_FILE
+# By default the LOG_FILE writes to stdout
+# Example:
+# LOG_DIR="/var/log/crowdstrike/falconhoseclient/"
+# LOG_FILE="output"
+ARG LOG_DIR=""
+ARG LOG_FILE="/dev/stdout"
+
+# Pass them to the environment
+ENV LOG_DIR=$LOG_DIR
+ENV LOG_FILE=$LOG_FILE
 
 USER root
 
@@ -20,15 +31,14 @@ RUN apt-get update && apt-get install -y gettext-base curl
 COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
 RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
-RUN mkdir -p /var/log/pods/falconhoseclient
+RUN if [ ! -z "${LOG_DIR}" ]; then mkdir -p "${LOG_DIR}"; fi
 
 # Prepare a simple user instead of root
 RUN groupadd -g 1000 user && useradd -r -u 1000 -g user user
 RUN chown -R user:user /var/log/crowdstrike/falconhoseclient
 RUN chmod -R 755 /var/log/crowdstrike/falconhoseclient
 RUN chown -R user:user /opt/crowdstrike/etc
-RUN chown -R user:user /var/log/pods/falconhoseclient
-RUN chmod -R 755 /var/log/pods/falconhoseclient
+RUN if [ ! -z "${LOG_DIR}" ]; then chown -R user:user "${LOG_DIR}"; chmod -R 755 "${LOG_DIR}"; fi
 
 WORKDIR "${WORKDIR}"
 
