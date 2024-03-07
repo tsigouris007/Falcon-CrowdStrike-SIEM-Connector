@@ -57,6 +57,8 @@ To use this image with run-time arguments, skip the file and add them during run
 	-e CLIENT_ID=<CLIENT_ID> \
 	-e CLIENT_SECRET=<CLIENT_SECRET> \
 	-e API_BASE_URL=<API_BASE_URL> \
+	-e LOG_DIR=/var/log/crowdstrike/falconhoseclient/ \
+	-e LOG_FILE=output \
 	<name>:<tag>
 ```
 
