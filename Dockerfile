@@ -1,6 +1,7 @@
 FROM --platform=linux/amd64 ubuntu:20.04
 
 ENV WORKDIR="/home/user"
+ENV FALCON_CONN_VERSION="2.26.0"
 
 ARG CLIENT_ID=""
 ARG CLIENT_SECRET=""
@@ -28,7 +29,7 @@ RUN apt-get clean autoclean && apt-get autoremove --yes
 RUN apt-get update && apt-get install -y gettext-base curl
 
 # Copy CrowdStrike deb package
-COPY deb/crowdstrike-cs-falconhoseclient_2.18.0_amd64.deb "${WORKDIR}/crowdstrike.deb"
+COPY deb/crowdstrike-cs-falconhoseclient_${FALCON_CONN_VERSION}_amd64.deb "${WORKDIR}/crowdstrike.deb"
 RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
 RUN if [ ! -z "${LOG_DIR}" ]; then mkdir -p "${LOG_DIR}"; fi
@@ -56,10 +57,15 @@ COPY cfg/cs.falconhoseclient.cfg.template "${WORKDIR}"
 # Environment setup (if defined the values are used in the entrypoint)
 COPY .env "${WORKDIR}"
 
-# Install required certificates
+# Download and install required certificates
 # This step is not always required but it certainly avoids some problems
-RUN curl -s -o /etc/ssl/certs/DigiCertHighAssuranceEVRootCA.crt https://www.digicert.com/CACerts/DigiCertHighAssuranceEVRootCA.crt
-RUN curl -s -o /etc/ssl/certs/DigiCertAssuredIDRootCA.crt https://dl.cacerts.digicert.com/DigiCertAssuredIDRootCA.crt
+# Found at: https://www.digicert.com/kb/digicert-root-certificates.htm
+# RUN curl -s -o /etc/ssl/certs/DigiCertHighAssuranceEVRootCA.crt https://www.digicert.com/CACerts/DigiCertHighAssuranceEVRootCA.crt
+# RUN curl -s -o /etc/ssl/certs/DigiCertAssuredIDRootCA.crt https://dl.cacerts.digicert.com/DigiCertAssuredIDRootCA.crt
+
+# Commented out the download and use them directly from the certs folder
+COPY certs/DigiCertHighAssuranceEVRootCA.crt /etc/ssl/certs/DigiCertHighAssuranceEVRootCA.crt
+COPY certs/DigiCertAssuredIDRootCA.crt /etc/ssl/certs/DigiCertAssuredIDRootCA.crt
 
 # Change owner of workdir
 RUN chown -R user:user "${WORKDIR}"
