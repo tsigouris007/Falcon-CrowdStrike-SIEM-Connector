@@ -32,7 +32,7 @@ output_format = json
 # Will be true regardless if Syslog is not enabled
 # If path does not exist or user has no permission, log file will be used
 output_to_file = true
-output_path = /var/log/crowdstrike/falconhoseclient/output
+output_path = $LOG_DIR$LOG_FILE
 
 # Offset file full filepath and filename
 offset_path = /var/log/crowdstrike/falconhoseclient/stream_offsets
@@ -47,7 +47,7 @@ max_size = 500
 # Number of backups of the output file to be stored
 max_backups = 10
 # Maximum age of backup output files before it is deleted in DAYS
-max_age = 30
+max_age = $LOG_MAX_AGE
 
 [Logging]
 verbose_log = true
@@ -56,7 +56,7 @@ max_size = 500
 # Number of backups to be stored
 max_backups = 10
 # Maximum age of backup files before it is deleted in DAYS
-max_age = 30
+max_age = $LOG_MAX_AGE
 
 [Syslog]
 send_to_syslog_server = false

@@ -13,10 +13,12 @@ ARG API_BASE_URL=""
 # LOG_FILE="output"
 ARG LOG_DIR=""
 ARG LOG_FILE="/dev/stdout"
+ARG LOG_MAX_AGE="7"
 
 # Pass them to the environment
 ENV LOG_DIR=$LOG_DIR
 ENV LOG_FILE=$LOG_FILE
+ENV LOG_MAX_AGE=$LOG_MAX_AGE
 
 USER root
 

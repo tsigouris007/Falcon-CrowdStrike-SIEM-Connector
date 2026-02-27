@@ -32,8 +32,14 @@ if [ -z "$LOG_DIR" ] && [ -z "$LOG_FILE" ]; then
   LOG_FILE="/dev/stdout"
 fi
 
+if [ -z "$LOG_MAX_AGE" ]; then
+  LOG_MAX_AGE="7"
+fi
+
+echo "[+] Set default values for logging: LOG_DIR='$LOG_DIR', LOG_FILE='$LOG_FILE', LOG_MAX_AGE='$LOG_MAX_AGE'"
+
 # Substitute things properly
-export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL LOG_DIR=$LOG_DIR LOG_FILE=$LOG_FILE") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${CONFIGDIR}/${CONFIG}"
+export $(echo "CLIENT_ID=$CLIENT_ID CLIENT_SECRET=$CLIENT_SECRET API_BASE_URL=$API_BASE_URL LOG_DIR=$LOG_DIR LOG_FILE=$LOG_FILE LOG_MAX_AGE=$LOG_MAX_AGE") && envsubst < "${WORKDIR}/${CONFIG}.template" > "${CONFIGDIR}/${CONFIG}"
 
 # Run the client
 cs.falconhoseclient -nodaemon -config="${CONFIGDIR}/${CONFIG}" 2>&1
