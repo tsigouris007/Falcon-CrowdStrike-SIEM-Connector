@@ -1,7 +1,7 @@
 FROM --platform=linux/amd64 ubuntu:20.04
 
 ENV WORKDIR="/home/user"
-ENV FALCON_CONN_VERSION="2.26.0"
+ENV FALCON_CONN_VERSION="2.29.0"
 
 ARG CLIENT_ID=""
 ARG CLIENT_SECRET=""

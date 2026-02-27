@@ -32,7 +32,7 @@ output_format = json
 # Will be true regardless if Syslog is not enabled
 # If path does not exist or user has no permission, log file will be used
 output_to_file = true
-output_path = $LOG_DIR$LOG_FILE
+output_path = /var/log/crowdstrike/falconhoseclient/output
 
 # Offset file full filepath and filename
 offset_path = /var/log/crowdstrike/falconhoseclient/stream_offsets
@@ -47,7 +47,7 @@ max_size = 500
 # Number of backups of the output file to be stored
 max_backups = 10
 # Maximum age of backup output files before it is deleted in DAYS
-max_age = 7
+max_age = 30
 
 [Logging]
 verbose_log = true
@@ -56,7 +56,7 @@ max_size = 500
 # Number of backups to be stored
 max_backups = 10
 # Maximum age of backup files before it is deleted in DAYS
-max_age = 7
+max_age = 30
 
 [Syslog]
 send_to_syslog_server = false
@@ -111,8 +111,11 @@ keys_ordered = true
 
 [EventTypeCollection]
 DetectionSummaryEvent = true
+EppDetectionSummaryEvent = true
+FcsIoaDetectionSummaryEvent = true
 AuthActivityAuditEvent = true
 UserActivityAuditEvent = true
+APIActivityAuditEvent = true
 HashSpreadingEvent = true
 RemoteResponseSessionStartEvent = true
 RemoteResponseSessionEndEvent = true
@@ -127,6 +130,8 @@ ScheduledReportNotificationEvent = true
 MobileDetectionSummaryEvent = true
 XdrDetectionSummaryEvent = true
 IdpDetectionSummaryEvent = true
+DataProtectionDetectionSummaryEvent = true
+AutomatedLeadSummaryEvent = true
 
 # ----------------------------------------------------------------------------------------------------------------
 # Below configurations only applies if syslog is ENABLED (under Syslog: enabled=true
@@ -140,6 +145,14 @@ DetectionSummaryEvent_DocumentsAccessed = true
 DetectionSummaryEvent_ScanResults = true
 DetectionSummaryEvent_ExecutablesWritten = true
 DetectionSummaryEvent_QuarantineFiles = true
+EppDetectionSummaryEvent_DnsRequests = true
+EppDetectionSummaryEvent_NetworkAccesses = true
+EppDetectionSummaryEvent_DocumentsAccessed = true
+EppDetectionSummaryEvent_ExecutablesWritten = true
+EppDetectionSummaryEvent_QuarantineFiles = true
+EppDetectionSummaryEvent_MitreAttack = true
+FcsIoaDetectionSummaryEvent_MitreAttack = true
+IdpDetectionSummaryEvent_MitreAttack = true
 HashSpreadingEvent_Sensors = true
 RemoteResponseSessionEndEvent_Commands = true
 MobileDetectionSummaryEvent_SafetyNetErrors = true
@@ -159,6 +172,32 @@ MobileDetectionSummaryEvent_SystemProperties = true
 MobileDetectionSummaryEvent_IntrusivePackages = true
 MobileDetectionSummaryEvent_IntrusiveProcesses = true
 MobileDetectionSummaryEvent_IntrusiveProperties = true
+MobileDetectionSummaryEvent_SigningIdentities = true
+MobileDetectionSummaryEvent_MitreAttack = true
+DataProtectionDetectionSummaryEvent_Destination_Web = true
+# DataProtectionDetectionSummaryEvent_Destination_USB will be deprecated soon as it is moved under RemovableMedia now.
+DataProtectionDetectionSummaryEvent_Destination_USB = true
+DataProtectionDetectionSummaryEvent_Destination_Printer = true
+DataProtectionDetectionSummaryEvent_Destination_RemovableMedia_USB = true
+DataProtectionDetectionSummaryEvent_Destination_RemovableMedia_SDCard = true
+DataProtectionDetectionSummaryEvent_Destination_RemovableMedia_DiskImage = true
+DataProtectionDetectionSummaryEvent_Policy = true
+DataProtectionDetectionSummaryEvent_MatchedClassification = true
+DataProtectionDetectionSummaryEvent_RelatedClassifications = true
+DataProtectionDetectionSummaryEvent_Labels = true
+DataProtectionDetectionSummaryEvent_ContentPatterns = true
+DataProtectionDetectionSummaryEvent_OriginWebLocations = true
+DataProtectionDetectionSummaryEvent_FileType_Type = true
+DataProtectionDetectionSummaryEvent_FileCategoryCounts = true
+DataProtectionDetectionSummaryEvent_ContentPatternCounts = true
+DataProtectionDetectionSummaryEvent_AnodeIndicators = true
+DataProtectionDetectionSummaryEvent_AnodeIndicators_FileCategoryDistributions = true
+DataProtectionDetectionSummaryEvent_AnodeIndicators_NewContentPatternCounts = true
+DataProtectionDetectionSummaryEvent_DeviceGeoLocation = true
+DataProtectionDetectionSummaryEvent_MitreAttack = true
+XdrDetectionSummaryEvent_MitreAttack = true
+AutomatedLeadSummaryEvent_ThreatgraphIndicators = true
+AutomatedLeadSummaryEvent_MitreAttack = true
 
 # FIELD MAPPINGS
 # Section name format: <EventType> OR <EventType>_<EventSubType>
@@ -202,6 +241,12 @@ technique = event.Technique
 objective = event.Objective
 patternDisposition = event.PatternDispositionDescription
 outcome = event.PatternDispositionValue
+sourceProductsLabel = 'SourceProducts'
+sourceProducts = event.SourceProducts
+sourceVendorsLabel = 'SourceVendors'
+sourceVendors = event.SourceVendors
+dataDomainsLabel = 'DataDomains'
+dataDomains = event.DataDomains
 
 
 [DetectionSummaryEvent_DnsRequests]
@@ -403,6 +448,323 @@ objective = event.Objective
 patternDisposition = event.PatternDispositionDescription
 outcome = event.PatternDispositionValue
 
+
+[FcsIoaDetectionSummaryEvent]
+__header.0 = metadata.eventType
+__header.1 = 'Falcon Security IOA Detection Summary Event'
+__header.2 = event.Severity
+
+cat = event.Tactic
+msg = event.Description
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+duser = event.UserName
+msg = event.Description
+
+falconHostLinkLabel = 'FalconHostLink'
+falconHostLink = event.FalconHostLink
+EventCreatedTimestampLabel = 'EventCreatedTimestamp'
+EventCreatedTimestamp= event.EventCreatedTimestamp
+TechniqueLabel = 'Technique'
+Technique = event.Technique
+ObjectiveLabel = 'Objective'
+reason = event.Objective
+PatternIdLabel = 'PatternId'
+PatternId = event.PatternId
+ioaEventIDLabel = 'IoaEventId'
+ioaEventID = event.IoaEventId
+sourceProductsLabel = 'SourceProducts'
+sourceProducts = event.SourceProducts
+sourceVendorsLabel = 'SourceVendors'
+sourceVendors = event.SourceVendors
+dataDomainsLabel = 'DataDomains'
+dataDomains = event.DataDomains
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+regionLabel = 'CloudRegion'
+region = event.CloudRegion
+ioaeventCategoryLabel = 'EventCategory'
+ioaeventCategory = event.IoaEventCategory
+EventTypeLabel = 'EventType'
+EventType = event.IoaEventType
+AttackTypesLabel = 'AttackTypes'
+AttackTypes = event.AttackTypes
+UserPrincipalIdLabel = 'UserPrincipalId'
+UserPrincipalId = event.UserPrincipalId
+FalconHostLinkLabel = 'FalconHostLink'
+FalconHostLink = event.FalconHostLink
+AzureTenantIdLabel = 'AzureTenantId'
+AzureTenantId = event.AzureTenantId
+AwsAccountIdLabel  = 'AwsAccountId'
+AwsAccountId = event.AwsAccountId
+AwsRecipientAccountIdLabel  = 'AwsRecipientAccountId'
+AwsRecipientAccountId = event.AwsRecipientAccountId
+AwsAccessKeyIdLabel  = 'AwsAccessKeyId'
+AwsAccessKeyId = event.AwsAccessKeyId
+PolicyIdLabel = 'PolicyId'
+PolicyId = event.PolicyId
+ResourceIdLabel = 'ResourceId'
+ResourceId = event.ResourceId
+UserAgentLabel = 'UserAgent'
+UserAgent = event.UserAgent
+SourceIPAddressLabel = 'SourceIPAddress'
+SourceIPAddress = event.SourceIPAddress
+CloudProviderLabel = 'CloudProvider'
+CloudProvider = event.CloudProvider
+ServiceLabel = 'Service'
+Service = event.Service
+ResourceIdLabel = 'ResourceId'
+ResourceId = event.ResourceId
+
+[FcsIoaDetectionSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent]
+__header.0 = metadata.eventType
+__header.1 = metadata.eventType
+__header.2 = event.Severity
+
+cat = event.Tactic
+externalId = event.AgentId
+cn2Label = 'ProcessId'
+cn2 = event.ProcessId
+cn1Label = 'ParentProcessId'
+cn1 = event.ParentProcessId
+dhost = event.Hostname
+duser = event.UserName
+msg = event.Description
+fname = event.FileName
+filePath = event.FilePath
+cs5Label = 'CommandLine'
+cs5 = event.CommandLine
+fileHash = event.MD5String
+dntdom = event.LogonDomain
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+objective = event.Objective
+patternDisposition = event.PatternDispositionDescription
+outcome = event.PatternDispositionValue
+sourceProductsLabel = 'SourceProducts'
+sourceProducts = event.SourceProducts
+sourceVendorsLabel = 'SourceVendors'
+sourceVendors = event.SourceVendors
+dataDomainsLabel = 'DataDomains'
+dataDomains = event.DataDomains
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent_DnsRequests]
+__header.0 = 'DNS Request In An Epp Detection Summary Event'
+__header.1 = 'DNS Request In An Epp Detection Summary Event'
+__header.2 = event.Severity
+
+cat = event.Tactic
+externalId = event.AgentId
+cn2Label = 'ProcessId'
+cn2 = event.ProcessId
+dhost = event.Hostname
+duser = event.UserName
+fname = event.FileName
+filePath = event.FilePath
+dntdom = event.LogonDomain
+cs5Label = 'CommandLine'
+cs5 = event.CommandLine
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+deviceCustomDate1Label = 'DNS Request Time'
+deviceCustomDate1 = event.DnsRequests.LoadTime
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+objective = event.Objective
+patternDisposition = event.PatternDispositionDescription
+outcome = event.PatternDispositionValue
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent_NetworkAccesses]
+__header.0 = 'Network Access In An Epp Detection Summary Event'
+__header.1 = 'Network Access In An Epp Detection Summary Event'
+__header.2 = event.Severity
+
+cat = event.Tactic
+externalId = event.AgentId
+cn2Label = 'ProcessId'
+cn2 = event.ProcessId
+dhost = event.Hostname
+duser = event.UserName
+fname = event.FileName
+filePath = event.FilePath
+cs5Label = 'CommandLine'
+cs5 = event.CommandLine
+dntdom = event.LogonDomain
+src = event.NetworkAccesses.LocalAddress
+c6a2 = event.NetworkAccesses.LocalAddress
+dst = event.NetworkAccesses.RemoteAddress
+c6a3 = event.NetworkAccesses.RemoteAddress
+spt = event.NetworkAccesses.LocalPort
+dpt = event.NetworkAccesses.RemotePort
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+deviceCustomDate1Label = 'Network Access Timestamp'
+deviceCustomDate1 = event.NetworkAccesses.AccessTimestamp
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+objective = event.Objective
+patternDisposition = event.PatternDispositionDescription
+outcome = event.PatternDispositionValue
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent_FilesAccessed]
+__header.0 = 'File Access In An Epp Detection Summary Event'
+__header.1 = 'File Access In An Epp Detection Summary Event'
+__header.2 = event.Severity
+
+cat = event.Tactic
+externalId = event.AgentId
+cn2Label = 'ProcessId'
+cn2 = event.ProcessId
+dhost = event.Hostname
+duser = event.UserName
+fname = event.FileName
+filePath = event.FilePath
+dntdom = event.LogonDomain
+cs2Label = 'AccessedFileName'
+cs2 = event.FilesAccessed.FileName
+cs3Label = 'AccessedFilePath'
+cs3 = event.FilesAccessed.FilePath
+cs5Label = 'CommandLine'
+cs5 = event.CommandLine
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+deviceCustomDate1Label = 'Accessed Timestamp'
+deviceCustomDate1 = event.FilesAccessed.Timestamp
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+objective = event.Objective
+patternDisposition = event.PatternDispositionDescription
+outcome = event.PatternDispositionValue
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent_FilesWritten]
+__header.0 = 'File Written In An Epp Detection Summary Event'
+__header.1 = 'File Written In An Epp Detection Summary Event'
+__header.2 = event.Severity
+
+cat = event.Tactic
+externalId = event.AgentId
+cn2Label = 'ProcessId'
+cn2 = event.ProcessId
+dhost = event.Hostname
+duser = event.UserName
+fname = event.FileName
+filePath = event.FilePath
+dntdom = event.LogonDomain
+cs2Label = 'WrittenFileName'
+cs2 = event.FilesWritten.FileName
+cs3Label = 'WrittenFilePath'
+cs3 = event.FilesWritten.FilePath
+cs5Label = 'CommandLine'
+cs5 = event.CommandLine
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+deviceCustomDate1Label = 'WrittenTimestamp'
+deviceCustomDate1 = event.FilesWritten.Timestamp
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+objective = event.Objective
+patternDisposition = event.PatternDispositionDescription
+outcome = event.PatternDispositionValue
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent_QuarantineFiles]
+__header.0 = 'Quarantined Files In An Epp Detection Summary Event'
+__header.1 = 'Quarantined Files In An Epp Detection Summary Event'
+__header.2 = event.Severity
+
+cat = event.Tactic
+externalId = event.AgentId
+cn2Label = 'ProcessId'
+cn2 = event.ProcessId
+dhost = event.Hostname
+duser = event.UserName
+fname = event.FileName
+filePath = event.FilePath
+dntdom = event.LogonDomain
+cs2Label = 'QuarantineFileSHA256'
+cs2 = event.QuarantineFiles.SHA256HashData
+cs3Label = 'QuarantineFilePath'
+cs3 = event.QuarantineFiles.ImageFileName
+cs5Label = 'CommandLine'
+cs5 = event.CommandLine
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+rt = metadata.eventCreationTime
+tactic = event.Tactic
+technique = event.Technique
+objective = event.Objective
+patternDisposition = event.PatternDispositionDescription
+outcome = event.PatternDispositionValue
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
+[EppDetectionSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+CompositeIdLabel = 'CompositeId'
+CompositeId = event.CompositeId
+
 [UserActivityAuditEvent]
 __header.0 = metadata.eventType
 __header.1 = event.OperationName
@@ -418,6 +780,22 @@ outcome = event.Success
 rt = metadata.eventCreationTime
 
 [AuthActivityAuditEvent]
+__header.0 = event.OperationName
+__header.1 = event.OperationName
+__header.2 = '1'
+
+cat = metadata.eventType
+destinationTranslatedAddress = event.UserIp
+duser = event.UserId
+deviceProcessName = event.ServiceName
+cn3Label = 'Offset'
+cn3 = metadata.offset
+outcome = event.Success
+deviceCustomDate1Label = 'Timestamp'
+deviceCustomDate1 = event.UTCTimestamp
+rt = metadata.eventCreationTime
+
+[APIActivityAuditEvent]
 __header.0 = event.OperationName
 __header.1 = event.OperationName
 __header.2 = '1'
@@ -757,13 +1135,13 @@ __header.0 = metadata.eventType
 __header.1 = metadata.Tactic
 __header.2 = event.Severity
 
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 cat = event.Tactic
 externalId = event.SensorId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cn1Label = 'SELinuxEnforcementPolicy'
 cn1 = event.SELinuxEnforcementPolicy
@@ -785,11 +1163,11 @@ __header.2 = event.Severity
 __header.3 = event.subType
 
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 safetyNetCTSProfileMatch = event.SafetyNetCTSProfileMatch
 safetyNetBasicIntegrity = event.SafetyNetBasicIntegrity
 cn2Label = 'SafetyNetEvaluationType'
@@ -811,6 +1189,7 @@ cat = event.Tactic
 act = event.Technique
 reason = event.Objective
 
+
 [MobileDetectionSummaryEvent_KeyStoreErrors]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -818,11 +1197,11 @@ __header.2 = event.Severity
 __header.3 = event.subType
 
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 cn4Label = 'VerifiedBootState'
 cn4 = event.VerifiedBootState
 cs6Label = 'FalconHostLink'
@@ -838,6 +1217,7 @@ cat = event.Tactic
 act = event.Technique
 reason = event.Objective
 
+
 [MobileDetectionSummaryEvent_PlayIntegrityErrorList]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -845,11 +1225,11 @@ __header.2 = event.Severity
 __header.3 = event.subType
 
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 playIntegrityMeetsBasicIntegrity = event.PlayIntegrityMeetsBasicIntegrity
 playIntegrityMeetsDeviceIntegrity = event.PlayIntegrityMeetsDeviceIntegrity
 playIntegrityMeetsStrongIntegrity = event.PlayIntegrityMeetsStrongIntegrity
@@ -866,6 +1246,7 @@ cat = event.Tactic
 act = event.Technique
 reason = event.Objective
 
+
 [MobileDetectionSummaryEvent_MobileAppsDetails]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -874,10 +1255,10 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-detectId = event.DetectId
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'AppIdentifier'
 cs1 = event.MobileAppsDetails.AppIdentifier
@@ -914,6 +1295,7 @@ maliciousApkHash.2 = event.MobileAppsDetails.MaliciousAPKSHA256Hashes.2
 maliciousApkHash.3 = event.MobileAppsDetails.MaliciousAPKSHA256Hashes.3
 maliciousApkHash.4 = event.MobileAppsDetails.MaliciousAPKSHA256Hashes.4
 
+
 [MobileDetectionSummaryEvent_MobileNetworkConnections]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -922,11 +1304,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 applicationName = event.ApplicationName
 networkDetectionType = event.NetworkDetectionType
@@ -959,6 +1341,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_MobileDnsRequests]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -967,11 +1350,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 destinationDnsDomain = event.MobileDnsRequests.DomainName
 cs1Label = 'RequestType'
@@ -993,6 +1376,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_MountedVolumes]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1001,11 +1385,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'Type'
 cs1 = event.MountedVolumes.Type
@@ -1026,6 +1410,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_Trampolines]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1034,11 +1419,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'FunctionName'
 cs1 = event.Trampolines.FunctionName
@@ -1056,6 +1441,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_LoadedObjects]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1064,11 +1450,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 fname = event.LoadedObjects.FileName
 fileHash = event.LoadedObjects.SHA256HashData
@@ -1085,6 +1471,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_ObjectiveCRuntimesAltered]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1093,11 +1480,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'MethodSignature'
 cs1 = event.ObjectiveCRuntimesAltered.MethodSignature
@@ -1119,6 +1506,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_RootAccessIndicators]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1127,11 +1515,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'LogcatMessage'
 cs1 = event.RootAccessIndicators.LogcatMessage
@@ -1152,6 +1540,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_Certificates]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1160,11 +1549,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'CertificateName'
 cs1 = event.Certificates.Name
@@ -1183,6 +1572,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_EnvironmentVariables]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1191,11 +1581,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'EnvironmentVariableName'
 cs1 = event.EnvironmentVariables.Name
@@ -1212,6 +1602,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_SystemProperties]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1220,11 +1611,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'SystemPropertyName'
 cs1 = event.SystemProperties.Name
@@ -1241,6 +1632,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_IntrusivePackages]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1249,11 +1641,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'IntrusivePackageName'
 cs1 = event.IntrusivePackages.PackageName
@@ -1268,6 +1660,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_IntrusiveProcesses]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1276,11 +1669,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'IntrusiveProcessName'
 cs1 = event.IntrusiveProcesses.ProcessName
@@ -1297,6 +1690,7 @@ tactic = event.Tactic
 technique = event.Technique
 objective = event.Objective
 
+
 [MobileDetectionSummaryEvent_IntrusiveProperties]
 __header.0 = metadata.eventType
 __header.1 = event.Tactic
@@ -1305,11 +1699,11 @@ __header.3 = event.subType
 
 cat = event.Tactic
 externalId = event.SensorId
-cs5Label = 'DetectId'
-cs5 = event.DetectId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 dhost = event.ComputerName
 duser = event.UserName
-msg = event.DetectDescription
+msg = event.Description
 dvcpid = event.ProcessId
 cs1Label = 'IntrusivePropertyName'
 cs1 = event.IntrusiveProperties.PropertyName
@@ -1327,6 +1721,49 @@ technique = event.Technique
 objective = event.Objective
 
 
+[MobileDetectionSummaryEvent_SigningIdentities]
+__header.0 = metadata.eventType
+__header.1 = event.Tactic
+__header.2 = event.Severity
+__header.3 = event.subType
+
+externalId = event.SensorId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+dhost = event.ComputerName
+duser = event.UserName
+msg = event.Description
+dvcpid = event.ProcessId
+cs1Label = 'SigningIdentitiesName'
+cs1 = event.SigningIdentities.Name
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+cn3Label = 'Offset'
+cn3 = metadata.offset
+deviceCustomDate1Label = 'ContextTimeStamp'
+deviceCustomDate1 = event.ContextTimeStamp
+rt = metadata.eventCreationTime
+cat = event.Tactic
+act = event.Technique
+reason = event.Objective
+
+[MobileDetectionSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 
 [XdrDetectionSummaryEvent]
 __header.0 = metadata.eventType
@@ -1378,7 +1815,26 @@ users = event.Users
 cn3Label = 'Offset'
 cn3 = metadata.offset
 
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 
+[XdrDetectionSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 
 [IdpDetectionSummaryEvent]
 __header.0 = metadata.eventType
@@ -1386,7 +1842,7 @@ __header.1 = 'Identity Protection Detection Summary Event'
 __header.2 = event.Severity
 
 cat = metadata.eventType
-msg = event.DetectDescription
+msg = event.Description
 rt = metadata.eventCreationTime
 tactic = event.Tactic
 technique = event.Technique
@@ -1451,10 +1907,16 @@ objectiveLabel = 'Objective'
 objective = event.Objective
 mostRecentActivityTimeStampLabel = 'MostRecentActivityTimeStamp'
 mostRecentActivityTimeStamp = event.MostRecentActivityTimeStamp
+modelAnomalyIndicatorsLabel = 'ModelAnomalyIndicators'
+modelAnomalyIndicators = event.ModelAnomalyIndicators
 locationCountryCodeLabel = 'LocationCountryCode'
 locationCountryCode = event.LocationCountryCode
 ldapSearchQueryAttackLabel = 'LdapSearchQueryAttack'
 ldapSearchQueryAttack = event.LdapSearchQueryAttack
+ispDomainLabel = 'ISPDomain'
+ispDomain = event.ISPDomain
+ispClassificationLabel = 'ISPClassification'
+ispClassification = event.ISPClassification
 idpPolicyRuleTriggerLabel = 'IdpPolicyRuleTrigger'
 idpPolicyRuleTrigger = event.IdpPolicyRuleTrigger
 idpPolicyRuleNameLabel = 'IdpPolicyRuleName'
@@ -1465,10 +1927,10 @@ falconHostLinkLabel = 'FalconHostLink'
 falconHostLink = event.FalconHostLink
 endTimeLabel = 'EndTime'
 endTime = event.EndTime
-detectNameLabel = 'DetectName'
-detectName = event.DetectName
-detectIdLabel = 'DetectId'
-detectId = event.DetectId
+nameLabel = 'Name'
+name = event.Name
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
 contextTimeStampLabel = 'ContextTimeStamp'
 contextTimeStamp = event.ContextTimeStamp
 attemptOutcomeLabel = 'AttemptOutcome'
@@ -1501,10 +1963,1081 @@ additionalAccountDomainLabel = 'AdditionalAccountDomain'
 additionalAccountDomain = event.AdditionalAccountDomain
 addedPrivilegeLabel = 'AddedPrivilege'
 addedPrivilege = event.AddedPrivilege
+activityOperatingSystemLabel = 'ActivityOperatingSystem'
+activityOperatingSystem = event.ActivityOperatingSystem
 activityIdLabel = 'ActivityId'
 activityId = event.ActivityId
+activityDeviceLabel = 'ActivityDevice'
+activityDevice = event.ActivityDevice
+activityBrowserLabel = 'ActivityBrowser'
+activityBrowser = event.ActivityBrowser
 accountCreationTimeStampLabel = 'AccountCreationTimeStamp'
 accountCreationTimeStamp = event.AccountCreationTimeStamp
+mitreAttackLabel = 'MitreAttack'
+mitreAttack = event.MitreAttack
 
 cn3Label = 'Offset'
 cn3 = metadata.offset
+
+[IdpDetectionSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+
+[DataProtectionDetectionSummaryEvent]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+platformLabel = 'Platform'
+platform = event.Platform
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+eventTimestampLabel = 'EventTimestamp'
+eventTimestamp = event.EventTimestamp
+deviceCustomDate1Label = 'SessionStartTime'
+deviceCustomDate1 = event.SessionStartTimestamp
+deviceCustomDate2Label = 'SessionEndTime'
+deviceCustomDate2 = event.SessionEndTimestamp
+userNotifiedLable = 'UserNotified'
+userNotified = event.UserNotified
+responseActionLabel = 'ResponseAction'
+responseAction = event.ResponseAction
+ruleIdLabel = 'RuleId'
+ruleId = event.RuleId
+isClipboardLabel = 'IsClipboard'
+isClipboard = event.IsClipboard
+contentShaLabel = 'ContentSha'
+contentSha = event.ContentSha
+userMappedLable = 'userMapped'
+userMapped = event.UserMapped
+filesEgressedCountLabel = 'FilesEgressedCount'
+filesEgressedCount = event.FilesEgressedCount
+
+[DataProtectionDetectionSummaryEvent_Destination_Web]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+channelLabel = 'Channel'
+channel = event.Destination.Channel
+webDestinationIDLabel = 'Web Destination ID'
+webDestinationID = event.Destination.Web.ID
+webDestinationNameLabel = 'Web Destination Name'
+webDestinationName = event.Destination.Web.Name
+webDestinationUsernameLabel = 'Web Destination Username'
+webDestinationUsername = event.Destination.Web.Username
+webDestinationURLLabel = 'Web Destination URL'
+webDestinationURL = event.Destination.Web.URL
+webDestinationHostnameLabel = 'Web Destination Hostname'
+webDestinationHostname = event.Destination.Web.Hostname
+webDestinationNormalizedURLLabel = 'Web Destination NormalizedURL'
+webDestinationNormalizedUR = event.Destination.Web.NormalizedURL
+
+
+[DataProtectionDetectionSummaryEvent_Destination_USB]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+channelLabel = 'Channel'
+channel = event.Destination.Channel
+usbCombinedIDLabel = 'USB Destination Combined ID'
+usbCombinedID = event.Destination.USB.CombinedID
+usbVendorIDLabel = 'USB Destination Vendor ID'
+usbVendorID = event.Destination.USB.VendorID
+usbProductIDLabel = 'USB Destination Product ID'
+usbProductID = event.Destination.USB.ProductID
+usbSerialNumberLabel = 'USB Destination Serial Number'
+usbSerialNumber = event.Destination.USB.SerialNumber
+usbVendorNameLabel = 'USB Destination Vendor Name'
+usbVendorName = event.Destination.USB.VendorName
+usbProductNameLabel = 'USB Destination Product Name'
+usbProductName = event.Destination.USB.ProductName
+usbDeviceInstanceIDLabel = 'USB Destination Instance ID'
+usbDeviceInstance = event.Destination.USB.DeviceInstanceID
+usbDeviceKeyLabel = 'USB Destination Device Key'
+usbDeviceKey = event.Destination.USB.USBDeviceKey
+
+
+[DataProtectionDetectionSummaryEvent_Destination_Printer]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+channelLabel = 'Channel'
+channel = event.Destination.Channel
+# ToDo: We may want to remove some fields from below
+printerDriverNameLabel = 'Printer Driver Name'
+printerDriverName = event.Destination.Printer.PrinterDriverName
+printerPortTypeNameLabel = 'Printer Port Type Name'
+printerPortTypeName = event.Destination.Printer.PrinterPortTypeName
+printerPortTypeLabel = 'Printer Port Type'
+printerPortType = event.Destination.Printer.PrinterPortType
+printerPortValueLabel = 'Printer Port Value'
+printerPortValue = event.Destination.Printer.PrinterPortValue
+printerNameLabel = 'Printer Name Label'
+printerName = event.Destination.Printer.PrinterName
+printerShareNameLabel = 'Printer Share Name'
+printerShareName = event.Destination.Printer.PrinterShareName
+printerServerNameLabel = 'Printer Server Name'
+printerServerName = event.Destination.Printer.PrinterServerName
+printerHardwareIDLabel = 'Printer Hardware ID'
+printerHardwareID = event.Destination.Printer.PrinterHardwareID
+printerPageDescriptionLangugageLabel = 'Printer Page Description Language'
+printerPageDescriptionLanguage = event.Destination.Printer.PageDescriptionLanguage
+
+
+[DataProtectionDetectionSummaryEvent_Destination_RemovableMedia_USB]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+channelLabel = 'Channel'
+channel = event.Destination.Channel
+removableMediaStorageKindLabel = 'Removable Media Storage Kind'
+removableMediaStorageKind = event.Destination.RemovableMedia.StorageKind
+removableMediaStorageKindNameLabel = 'Removable Media Storage Kind Name'
+removableMediaStorageKindName = event.Destination.RemovableMedia.StorageKindName
+removableMediaUSBCombinedIDLabel = 'Removable Media USB Destination Combined ID'
+removableMediaUSBCombinedID = event.Destination.RemovableMedia.USB.CombinedID
+removableMediaUSBVendorIDLabel = 'Removable Media USB Destination Vendor ID'
+removableMediaUSBVendorID = event.Destination.RemovableMedia.USB.VendorID
+removableMediaUSBProductIDLabel = 'Removable Media USB Destination Product ID'
+removableMediaUSBProductID = event.Destination.RemovableMedia.USB.ProductID
+removableMediaUSBSerialNumberLabel = 'Removable Media USB Destination Serial Number'
+removableMediaUSBSerialNumber = event.Destination.RemovableMedia.USB.SerialNumber
+removableMediaUSBVendorNameLabel = 'Removable Media USB Destination Vendor Name'
+removableMediaUSBVendorName = event.Destination.RemovableMedia.USB.VendorName
+removableMediaUSBProductNameLabel = 'Removable Media USB Destination Product Name'
+removableMediaUSBProductName = event.Destination.RemovableMedia.USB.ProductName
+removableMediaUSBDeviceInstanceIDLabel = 'Removable Media USB Destination Instance ID'
+removableMediaUSBDeviceInstance = event.Destination.RemovableMedia.USB.DeviceInstanceID
+removableMediaUSBDeviceKeyLabel = 'Removable Media USB Destination Device Key'
+removableMediaUSBDeviceKey = event.Destination.RemovableMedia.USB.USBDeviceKey
+
+
+[DataProtectionDetectionSummaryEvent_Destination_RemovableMedia_SDCard]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+channelLabel = 'Channel'
+channel = event.Destination.Channel
+removableMediaStorageKindLabel = 'Removable Media Storage Kind'
+removableMediaStorageKind = event.Destination.RemovableMedia.StorageKind
+removableMediaStorageKindNameLabel = 'Removable Media Storage Kind Name'
+removableMediaStorageKindName = event.Destination.RemovableMedia.StorageKindName
+removableMediaSDCardCardTypeLabel = 'Removable Media SD Card Type'
+removableMediaSDCardCardType = event.Destination.RemovableMedia.SDCard.CardType
+removableMediaSDCardManufacturerIDLabel = 'Removable Media SD Card Manufacturer ID'
+removableMediaSDCardManufacturerID = event.Destination.RemovableMedia.SDCard.ManufacturerID
+removableMediaSDCardOriginalEquipmentManufacturerIDLabel = 'Removable Media SD Card Original Equipment Manufacturer ID'
+removableMediaSDCardOriginalEquipmentManufacturerID = event.Destination.RemovableMedia.SDCard.OriginalEquipmentManufacturerID
+removableMediaSDCardProductNameLabel = 'Removable Media SD Card Product Name'
+removableMediaSDCardProductName = event.Destination.RemovableMedia.SDCard.ProductName
+removableMediaSDCardProductRevisionLabel = 'Removable Media SD Card Product Revision'
+removableMediaSDCardProductRevision = event.Destination.RemovableMedia.SDCard.ProductRevision
+removableMediaSDCardSerialNumberLabel = 'Removable Media SD Card Serial Number'
+removableMediaSDCardSerialNumber = event.Destination.RemovableMedia.SDCard.SerialNumber
+removableMediaSDCardManufactureDateCodeLabel = 'Removable Media SD Card Manufacture Date Code'
+removableMediaSDCardManufactureDateCode = event.Destination.RemovableMedia.SDCard.ManufactureDateCode
+
+
+[DataProtectionDetectionSummaryEvent_Destination_RemovableMedia_DiskImage]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+channelLabel = 'Channel'
+channel = event.Destination.Channel
+removableMediaStorageKindLabel = 'Removable Media  Storage Kind'
+removableMediastorageKind = event.Destination.RemovableMedia.StorageKind
+removableMediaStorageKindNameLabel = 'Removable Media Storage Kind Name'
+removableMediaStorageKindName = event.Destination.RemovableMedia.StorageKindName
+removableMediaDiskImageFilePathLabel = 'Removable Media Disk Image File Path'
+removableMediaDiskImageFilePath = event.Destination.RemovableMedia.DiskImage.ImageFilePath
+removableMediaDiskImageBSDDeviceLabel = 'Removable Media Disk Image BSD Device'
+removableMediaDiskImageBSDDevice = event.Destination.RemovableMedia.DiskImage.BSDDevice
+
+
+[DataProtectionDetectionSummaryEvent_Policy]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+policyIDLabel = 'Policy ID'
+policyID = event.Policy.ID
+policyNameLabel = 'Policy Name'
+policyName = event.Policy.Name
+
+
+[DataProtectionDetectionSummaryEvent_MatchedClassification]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+matchedClassificationIDLabel = 'Matched Classification ID'
+matchedClassificationID = event.MatchedClassification.ID
+matchedClassificationNameLabel = 'Matched Classification Name'
+matchedClassificationName = event.MatchedClassification.Name
+
+
+[DataProtectionDetectionSummaryEvent_RelatedClassifications]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+relatedClassificationIDLabel = 'Related Classification ID'
+relatedClassificationID = event.RelatedClassifications.ID
+relatedClassificationNameLabel = 'Related Classification Name'
+relatedClassificationName = event.RelatedClassifications.Name
+
+
+[DataProtectionDetectionSummaryEvent_Labels]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+labelIDLabel = 'Label ID'
+labelID = event.Labels.ID
+labelNameLabel = 'Label Name'
+labelName = event.Labels.Name
+
+
+[DataProtectionDetectionSummaryEvent_ContentPatterns]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+contentPatternIDLabel = 'Content Pattern ID'
+contentPatternID = event.ContentPatterns.ID
+contentPatternNameLabel = 'Content Pattern Name'
+contentPatternName = event.ContentPatterns.Name
+
+
+[DataProtectionDetectionSummaryEvent_OriginWebLocations]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+originWebLocationIDLabel = 'Origin Web Location ID'
+originWebLocationID = event.OriginWebLocations.ID
+originWebLocationNameLabel = 'Origin Web Location Name'
+originWebLocationName = event.OriginWebLocations.Name
+originWebLocationUsernameLabel = 'Origin Web Location Username'
+originWebLocationUsername = event.OriginWebLocations.Username
+originWebLocationURLLabel = 'Origin Web Location URL'
+originWebLocationURL = event.OriginWebLocations.URL
+originWebLocationHostnameLabel = 'Origin Web Location Hostname'
+originWebLocationHostname = event.OriginWebLocations.Hostname
+originWebLocationNormalizedURLLabel = 'Origin Web Location NormalizedURL'
+originWebLocationNormalizedURL = event.OriginWebLocations.NormalizedURL
+
+
+[DataProtectionDetectionSummaryEvent_FileType_Type]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+fileTypeIDLabel = 'File Type ID'
+fileTypeID = event.FileType.ID
+fileTypeNameLabel = 'File Type Name'
+fileTypeName = event.FileType.Name
+fileTypeDescLabel = 'File Type Description'
+fileTypeDesc = event.FileType.Description
+fileTypeCatIDLabel = 'File Type Category ID'
+fileTypeCatID = event.FileType.CategoryID
+fileTypeCatNameLabel = 'File Type Category Name'
+fileTypeCatName = event.FileType.CategoryName
+
+
+[DataProtectionDetectionSummaryEvent_FileCategoryCounts]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+fileCategoryNameLabel = 'File Category Name'
+fileCategoryName = event.FileCategoryCounts.Name
+fileCategoryIDLabel = 'File Category ID'
+fileCategoryID = event.FileCategoryCounts.ID
+fileCategoryCountLabel = 'File Category Count'
+fileCategoryCount = event.FileCategoryCounts.Count
+
+
+[DataProtectionDetectionSummaryEvent_ContentPatternCounts]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+egressEventIdLabel = 'EgressEventId'
+egressEventId = event.EgressEventId
+contentPatternNameLabel = 'Content Pattern Name'
+contentPatternName = event.ContentPatternCounts.Name
+contentPatternIDLabel = 'Content Pattern ID'
+contentPatternID = event.ContentPatternCounts.ID
+contentPatternCountLabel = 'Content Pattern Count'
+contentPatternCount = event.ContentPatternCounts.Count
+
+
+[DataProtectionDetectionSummaryEvent_AnodeIndicators]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+anodeIndicatorNameLabel = 'Anode Indicator Name'
+anodeIndicatorName = event.AnodeIndicators.Name
+anodeIndicatorDetectedLabel = 'Anode Indicator Detected'
+anodeIndicatorDetected = event.AnodeIndicators
+anodeIndicatorDestinationLabel = 'Anode Indicator Destination'
+anodeIndicatoDestinationr = event.AnodeIndicators.Destination
+anodeIndicatorEntityLabel = 'Anode Indicator Entity'
+anodeIndicatorEntity = event.AnodeIndicators.Entity
+anodeIndicatorScoreLabel = 'Anode Indicator Score'
+anodeIndicatorScore = event.AnodeIndicators.Score
+anodeIndicatorExplanationLabel = 'Anode Indicator Explanation'
+anodeIndicatorExplanation = event.AnodeIndicators.Explanation
+anodeIndicatorTypeLabel = 'Anode Indicator Type'
+anodeIndicatorType = event.AnodeIndicators.Type
+anodeIndicatorFileCountIncreasePercentageLabel = 'Anode Indicator FileCountIncreasePercentage'
+anodeIndicatorFileCountIncreasePercentage = event.AnodeIndicators.FileCountIncreasePercentage
+anodeIndicatorDataVolumeIncreasePercentageLabel = 'Anode Indicator DataVolumeIncreasePercentage'
+anodeIndicatorDataVolumeIncreasePercentage = event.AnodeIndicators.DataVolumeIncreasePercentage
+
+
+[DataProtectionDetectionSummaryEvent_AnodeIndicators_FileCategoryDistributions]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+anodeIndicatorFileCategoryDistIDLabel = 'Anode Indicator File Category Distribution ID'
+anodeIndicatorFileCategoryDistIDLabel = event.AnodeIndicators.FileCategoryDistributions.ID
+anodeIndicatorFileCategoryDistNameLabel = 'Anode Indicator File Category Distribution Name'
+anodeIndicatorFileCategoryDistName = event.AnodeIndicators.FileCategoryDistributions.Name
+anodeIndicatorFileCategoryDistExpectedPercentageLabel = 'Anode Indicator File Category Distribution ExpectedPercentage'
+anodeIndicatorFileCategoryDistExpectedPercentage = event.AnodeIndicators.FileCategoryDistributions.ExpectedPercentage
+anodeIndicatorFileCategoryDistCurrentPercentageLabel = 'Anode Indicator File Category Distribution CurrentPercentage'
+anodeIndicatorFileCategoryDistCurrentPercentage = event.AnodeIndicators.FileCategoryDistributions.CurrentPercentage
+anodeIndicatorFileCategoryDistIncreasePercentageLabel = 'Anode Indicator File Category Distribution CurrentPercentage'
+anodeIndicatorFileCategoryDistIncreasePercentage = event.AnodeIndicators.FileCategoryDistributions.CurrentPercentage
+
+
+[DataProtectionDetectionSummaryEvent_AnodeIndicators_NewContentPatternCounts]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+anodeIndicatorNewContentPatternNameLabel = 'Anode Indicator New Content Pattern Name'
+anodeIndicatorNewContentPatternName = event.AnodeIndicators.NewContentPatternCounts.Name
+anodeIndicatorNewContentPatternIDLabel = 'Anode Indicator New Content Pattern ID'
+anodeIndicatorNewContentPatternID = event.AnodeIndicators.NewContentPatternCounts.ID
+anodeIndicatorNewContentPatternCountLabel = 'Anode Indicator New Content Pattern Count'
+anodeIndicatorNewContentPatternCount = event.AnodeIndicators.NewContentPatternCounts.Count
+
+
+[DataProtectionDetectionSummaryEvent_DeviceGeoLocation]
+__header.0 = metadata.eventType
+__header.1 = metadata.Tactic
+__header.2 = event.Severity
+__header.3 = event.SubType
+
+externalId = event.AgentId
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+name = event.Name
+msg = event.Description
+cat = event.Tactic
+technique = event.Technique
+severityNameLabel = 'SeverityName'
+severityName = event.SeverityName
+cs6Label = 'FalconHostLink'
+cs6 = event.FalconHostLink
+duser = event.UserName
+userTitleLabel = 'UserTitle'
+userTitle = event.UserTitle
+userDepartmentLabel = 'UserDepartment'
+userDepartment = event.UserDepartment
+userSidLabel = 'UserSid'
+userSid = event.UserSid
+dhost = event.Hostname
+patternIdLabel = 'PatternId'
+patternId = event.PatternId
+dataVolumeLabel = 'DataVolume'
+dataVolume = event.DataVolume
+detectionTypeLabel = 'DetectionType'
+detectionType = event.DetectionType
+egressSessionIdLabel = 'EgressSessionId'
+egressSessionId = event.EgressSessionId
+geoLocationCityNameLabel = 'Geo Location City Name'
+geoLocationCityName = event.DeviceGeoLocation.CityName
+geoLocationCountryNameLabel = 'Geo Location Country Name'
+geoLocationCountryName = event.DeviceGeoLocation.CountryName
+geoLocationContinentNameLabel = 'Geo Location Continent Name'
+geoLocationContinentName = event.DeviceGeoLocation.ContinentName
+geoLocationInternetServiceProviderLabel = 'Geo Location Internet Service Provider'
+geoLocationInternetServiceProvider = event.DeviceGeoLocation.InternetServiceProvider
+
+[DataProtectionDetectionSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+mitreAttackLabel = 'MitreAttack'
+mitreAttack = event.MitreAttack
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+
+[AutomatedLeadSummaryEvent]
+__header.0 = metadata.eventType
+__header.1 = event.LeadId
+
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
+leadIdLabel = 'LeadId'
+leadId = event.LeadId
+nameLabel = 'Name'
+name = event.Name
+descriptionLabel = 'Description'
+description = event.Description
+signalStartTimestampLabel = 'SignalStartTimestamp'
+signalStartTimestamp = event.SignalStartTimestamp
+signalEndTimestampLabel = 'SignalEndTimestamp'
+signalEndTimestamp = event.SignalEndTimestamp
+signalUpdatedTimestampLabel = 'SignalUpdatedTimestamp'
+signalUpdatedTimestamp = event.SignalUpdatedTimestamp
+scoreLabel = 'Score'
+score = event.Score
+threatgraphIndicatorsLabel = 'ThreatgraphIndicators'
+threatgraphIndicators = event.ThreatgraphIndicators
+leadTypeLabel = 'LeadType'
+leadType = event.LeadType
+
+[AutomatedLeadSummaryEvent_ThreatgraphIndicators]
+__header.0 = metadata.eventType
+__header.1 = 'ThreatgraphIndicators'
+__header.2 = event.LeadId
+__header.3 = event.IndicatorId
+
+indicatorIdLabel = "IndicatorId"
+indicatorId = event.ThreatgraphIndicators.IndicatorId
+signalAssociationTimestamp = "SignalAssociationTimestamp"
+signalAssociationTimestamp = event.ThreatgraphIndicators.SignalAssociationTimestamp
+patternIdLabel = "PatternId"
+patternId = event.ThreatgraphIndicators.PatternId
+patternDispositionLabel = "PatternDisposition"
+patternDisposition = event.ThreatgraphIndicators.PatternDisposition
+severityLabel = "Severity"
+severity = event.ThreatgraphIndicators.Severity
+processIdLabel = "ProcessId"
+processId = event.ThreatgraphIndicators.ProcessId
+hostIdLabel = "HostId"
+hostId = event.ThreatgraphIndicators.HostId
+hostnameLabel = "Hostname"
+hostname = event.ThreatgraphIndicators.Hostname
+templateInstanceIdLabel = "TemplateInstanceId"
+templateInstanceId = event.ThreatgraphIndicators.TemplateInstanceId
+descriptionLabel = "Description"
+description = event.ThreatgraphIndicators.Description
+displayNameLabel = "DisplayName"
+displayName = event.ThreatgraphIndicators.DisplayName
+
+[AutomatedLeadSummaryEvent_MitreAttack]
+__header.0 = metadata.eventType
+__header.1 = 'MitreAttack'
+__header.2 = event.LeadId
+__header.3 = event.MitreAttack.PatternID
+
+tacticLabel = "Tactic"
+tactic = event.MitreAttack.Tactic
+tacticIdLabel = "TacticID"
+tacticId = event.MitreAttack.TacticID
+techniqueLabel = "Technique"
+technique = event.MitreAttack.Technique
+techniqueIdLabel = "TechniqueID"
+techniqueId = event.MitreAttack.TechniqueID
+patternIdLabel = "PatternID"
+patternId = event.MitreAttack.PatternID
+compositeIdLabel = 'CompositeId'
+compositeId = event.CompositeId
