@@ -1,7 +1,7 @@
-FROM --platform=linux/amd64 ubuntu:20.04
+FROM --platform=linux/amd64 ubuntu:24.04
 
 ENV WORKDIR="/home/user"
-ENV FALCON_CONN_VERSION="2.29.0"
+ENV FALCON_CONN_VERSION="2.32.1"
 
 ARG CLIENT_ID=""
 ARG CLIENT_SECRET=""
@@ -35,6 +35,9 @@ COPY deb/crowdstrike-cs-falconhoseclient_${FALCON_CONN_VERSION}_amd64.deb "${WOR
 RUN dpkg -i "${WORKDIR}/crowdstrike.deb"
 
 RUN if [ ! -z "${LOG_DIR}" ]; then mkdir -p "${LOG_DIR}"; fi
+
+# Ubuntu 24.04 ships a default "ubuntu" user with uid/gid 1000
+RUN userdel -r ubuntu 2>/dev/null || true
 
 # Prepare a simple user instead of root
 RUN groupadd -g 1000 user && useradd -r -u 1000 -g user user
