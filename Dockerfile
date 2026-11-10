@@ -60,7 +60,7 @@ RUN ln -s "${WORKDIR}/entrypoint.sh" /usr/bin/falconhoseclient
 COPY cfg/cs.falconhoseclient.cfg.template "${WORKDIR}"
 
 # Environment setup (if defined the values are used in the entrypoint)
-COPY .env "${WORKDIR}"
+COPY .env.example "${WORKDIR}/.env"
 
 # Download and install required certificates
 # This step is not always required but it certainly avoids some problems
